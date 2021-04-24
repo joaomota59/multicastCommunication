@@ -5,6 +5,8 @@
 
 sudo ifconfig enp0s3 multicast
 sudo route -n add -net 224.0.0.0 netmask 240.0.0.0 dev enp0s3
+
+echo -e 'Multicast ativado e rota adicionada!\nPronto para uso! =)'
 #inicar o send em uma maquina e o recive nas outras
 
 #script para iniciar a configuracao do multicast
