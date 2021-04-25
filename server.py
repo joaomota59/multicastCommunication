@@ -48,7 +48,7 @@ while True:
 
     ###inicio configuracoes do socket dos servidores####
     ####Faz as config para os servidores poderem enviar e receber mensagens###
-    multicast_group_servers = ('224.3.29.72',10001)
+    multicast_group_servers = ('224.0.0.1',10001)
     sockServer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sockServer.settimeout(0.2)
     ttl2 = struct.pack('b', 1)
