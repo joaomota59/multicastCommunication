@@ -23,10 +23,7 @@ sock.bind(server_address)
 # the multicast group on all interfaces.
 group = socket.inet_aton(multicast_group)
 mreq = struct.pack('4sL', group, socket.INADDR_ANY)
-sock.setsockopt(
-    socket.IPPROTO_IP,
-    socket.IP_ADD_MEMBERSHIP,
-    mreq)
+sock.setsockopt(socket.IPPROTO_IP,socket.IP_ADD_MEMBERSHIP,mreq)
 
 listaDeServidores = ['192.168.100.4','192.168.100.5','192.168.100.6','192.168.100.7']
 
@@ -43,24 +40,36 @@ while True:
     print('Recebida a entrada: {} --- do cliente {}'.format(data, addressCLient[0]))
 
     #print('sending acknowledgement to', address)
-    #sock.sendto(b'ack-2', addressCLient) arqui que devolte a resposta para o cliente
+    #sock.sendto(b'ack-2', addressCLient) #aqui que devolte a resposta para o cliente
 
 
     ###inicio comunicacao entre os servidores####
 
     ###inicio configuracoes do socket dos servidores####
+    ####Faz as config para os servidores poderem enviar e receber mensagens###
+    multicast_group_servers = ('224.3.29.72',10000)
     sockServer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sockServer.settimeout(0.2)
     ttl = struct.pack('b', 1)
-    sockServer.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)	
-    multicast_group_servers = ('224.3.29.72',10000)
-    ###fim configuracoes de socket####
+    sockServer.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+    try:	
+        sockServer.bind(('', 10001))
+        group2 = socket.inet_aton(multicast_group_servers[0])
+        mreq2 = struct.pack('4sL', group, socket.INADDR_ANY)
+        sockServer.setsockopt(socket.IPPROTO_IP,socket.IP_ADD_MEMBERSHIP,mreq2)
+	###fim configuracoes de socket####
 
-
-    messageServer = b'server on-line!'#mensagem que um servidor vai mandar p outro
+        messageServer = b'server on-line!'#mensagem que um servidor vai mandar p outro
     
-    sockServer.sendto(messageServer,multicast_group_servers)
-    print('Esperando feedback dos servidores\n')
-    data, addressServer = sockServer.recvfrom(1024)#pega o dado e o endereco do servidor que respondeu
-    print(data)
+        sockServer.sendto(messageServer,multicast_group_servers)
+        print('Esperando feedback dos servidores\n')
+        try:
+            data2, addressServer = sockServer.recvfrom(1024)#pega o dado e o endereco dos servidores
+        except socket.timeout:
+            print("Tempo excedido!")
+            break
+        else:
+            print('Recebida a resposta: {} --- do servidor {}'.format(data, addressServer[0]))
+    finally:
+        sockServer.close()
     ###fim comunicacao entre os servidores####
