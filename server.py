@@ -2,6 +2,7 @@ import socket
 import struct
 import sys
 import netifaces as ni
+import time
 
 
 def myAddress(interface = 'enp0s3'):
@@ -47,11 +48,11 @@ while True:
 
     ###inicio configuracoes do socket dos servidores####
     ####Faz as config para os servidores poderem enviar e receber mensagens###
-    multicast_group_servers = ('224.3.29.72',10000)
+    multicast_group_servers = ('224.3.29.72',10001)
     sockServer = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sockServer.settimeout(0.2)
-    ttl = struct.pack('b', 1)
-    sockServer.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+    ttl2 = struct.pack('b', 1)
+    sockServer.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl2)
     try:	
         sockServer.bind(('', 10001))
         group2 = socket.inet_aton(multicast_group_servers[0])
@@ -62,14 +63,16 @@ while True:
         messageServer = b'server on-line!'#mensagem que um servidor vai mandar p outro
     
         sockServer.sendto(messageServer,multicast_group_servers)
-        print('Esperando feedback dos servidores\n')
-        try:
-            data2, addressServer = sockServer.recvfrom(1024)#pega o dado e o endereco dos servidores
-        except socket.timeout:
-            print("Tempo excedido!")
-            break
-        else:
-            print('Recebida a resposta: {} --- do servidor {}'.format(data, addressServer[0]))
+        time.sleep(1)
+        while True:
+            print('Esperando feedback dos servidores\n')
+            try:
+                data2, addressServer = sockServer.recvfrom(1024)#pega o dado e o endereco dos servidores
+            except socket.timeout:
+                print("Tempo excedido!")
+                break
+            else:
+                print('Recebida a resposta: {} --- do servidor {}'.format(data2, addressServer[0]))
     finally:
         sockServer.close()
     ###fim comunicacao entre os servidores####
