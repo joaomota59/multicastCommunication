@@ -24,7 +24,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Set a timeout so the socket does not block
 # indefinitely when trying to receive data.
-sock.settimeout(0.2)
+sock.settimeout(2)#tempo de 2 segundos para receber a resposta do servidor
 
 
 
@@ -44,15 +44,15 @@ try:
 
 
     # Look for responses from all recipients
+    print('Esperando receber resposta...')
     while True:
-        print('Esperando receber resposta...')
         try:
             data, server = sock.recvfrom(16)
         except socket.timeout:#se o tempo de resposta execeder o esperado
             print('timed out, no more responses')
             break#conexao eh fechada apos o break
         else:
-            print('Recebido resposta:{!r} do servidor:{}'.format(data, server))
+            print('Resultado obitido do servidor:%s é :%s '%(server[0],data.decode()))
 
 finally:
     print('closing socket')
