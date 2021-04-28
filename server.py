@@ -5,10 +5,13 @@ import netifaces as ni
 import time
 
 
-def myAddress(interface = 'enp0s3'):
+def myAddress(interface = 'enp0s3'):#Funcao que descobre o ip do servidor
     ni.ifaddresses(interface)
     ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
     return ip
+
+def answerClient(expressao):#resposta para o cliente
+    return	
 
 multicast_group = '224.3.29.71'
 server_address = ('', 10000)
@@ -26,7 +29,7 @@ group = socket.inet_aton(multicast_group)
 mreq = struct.pack('4sL', group, socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP,socket.IP_ADD_MEMBERSHIP,mreq)
 
-listaDeServidores = ['192.168.100.4','192.168.100.5','192.168.100.6','192.168.100.7']
+listaDeServidores = [] #vetor com 
 
 
 # Receive/respond loop
@@ -37,7 +40,6 @@ while True:
         del(listaDeServidores[listaDeServidores.index(addressCLient[0])])
     except:#se o cliente ja estiver sido deletado da lista...
         pass
-    print(listaDeServidores)
     print('Recebida a entrada: {} --- do cliente {}'.format(data, addressCLient[0]))
 
     #print('sending acknowledgement to', address)
@@ -73,6 +75,15 @@ while True:
                 break
             else:
                 print('Recebida a resposta: {} --- do servidor {}'.format(data2, addressServer[0]))
+                listaDeServidores.append(addressServer[0])
     finally:
         sockServer.close()
+        print("Lista de servidores",listaDeServidores)
+        ipDesteServidor = myAddress()
+        print("IP deste servidor", ipDesteServidor)
+        if(min(listaDeServidores)==ipDesteServidor):
+            print("Este servidor ira responder o Cliente")
+            resposta = answerClient(data)
+            sock.sendto(b'ack-2', addressCLient)
+        listaDeServidores=[]#limpa a lista de servidores dps que terminar a execucao
     ###fim comunicacao entre os servidores####
