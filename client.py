@@ -9,7 +9,13 @@ def myAddress(interface = 'enp0s3'):#retorna o endereco do script q esta sendo u
 	ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
 	return ip
 
-message = b'very important data'
+try:
+    expression = input("Entre com alguma expressao para ser resolvida: ")
+    eval(expression)
+except:
+    print("Expressao Invalida!")
+    exit(0)#fecha o programa
+
 multicast_group = ('224.3.29.71', 10000)
 
 
@@ -33,13 +39,13 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
 try:
     # Send data to the multicast group
-    print('sending {!r}'.format(message))
-    sent = sock.sendto(message, multicast_group)
+    print('Enviando expressao: {!r}'.format(expression))
+    sent = sock.sendto(str.encode(expression), multicast_group)
 
 
     # Look for responses from all recipients
     while True:
-        print('waiting to receive')
+        print('Esperando receber resposta...')
         try:
             data, server = sock.recvfrom(16)
         except socket.timeout:#se o tempo de resposta execeder o esperado
