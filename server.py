@@ -11,7 +11,7 @@ def myAddress(interface = 'enp0s3'):#Funcao que descobre o ip do servidor
     return ip
 
 def answerClient(expressao):#resposta para o cliente
-    return	
+    return str(eval(expressao))#retorna o resultado da expressao passada	
 
 multicast_group = '224.3.29.71'
 server_address = ('', 10000)
@@ -82,8 +82,8 @@ while True:
         ipDesteServidor = myAddress()
         print("IP deste servidor", ipDesteServidor)
         if(min(listaDeServidores)==ipDesteServidor):
-            print("Este servidor ira responder o Cliente")
-            resposta = answerClient(data)
-            sock.sendto(b'ack-2', addressCLient)
+            print("Este servidor, tem o menor IP, ira responder o Cliente")
+            resposta = answerClient(data.decode())
+            sock.sendto(str.encode(resposta), addressCLient)#envia a resposta para o cliente
         listaDeServidores=[]#limpa a lista de servidores dps que terminar a execucao
     ###fim comunicacao entre os servidores####
