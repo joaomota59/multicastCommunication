@@ -30,6 +30,7 @@ mreq = struct.pack('4sL', group, socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP,socket.IP_ADD_MEMBERSHIP,mreq)
 
 listaDeServidores = [] #vetor com 
+listaDeServidores2 = [] #lista auxiliar para o print
 
 
 # Receive/respond loop
@@ -38,6 +39,7 @@ while True:
     data, addressCLient = sock.recvfrom(1024)#pega a msg e endereco do cliente
     try:#pega o ip do cliente e tira ele da lista de servidores
         del(listaDeServidores[listaDeServidores.index(addressCLient[0])])
+        del(listaDeServidores2[listaDeServidores2.index(addressCLient[0])])
     except:#se o cliente ja estiver sido deletado da lista...
         pass
     print('Recebida a entrada: {} --- do cliente {}'.format(data, addressCLient[0]))
@@ -76,9 +78,10 @@ while True:
             else:
                 print('Recebida a resposta: {} --- do servidor {}'.format(data2, addressServer[0]))
                 listaDeServidores.append(int(addressServer[0].replace(".","")))
+                listaDeServidores2.append(addressServer[0])
     finally:
         sockServer.close()
-        print("Lista de servidores",listaDeServidores)
+        print("Lista de servidores",listaDeServidores2)
         ipDesteServidor = myAddress()
         print("IP deste servidor", ipDesteServidor)
         if(min(listaDeServidores)==int(ipDesteServidor.replace(".",""))):
@@ -86,4 +89,5 @@ while True:
             resposta = answerClient(data.decode())
             sock.sendto(str.encode(resposta), addressCLient)#envia a resposta para o cliente
         listaDeServidores=[]#limpa a lista de servidores dps que terminar a execucao
+        listaDeServidores2=[]
     ###fim comunicacao entre os servidores####
