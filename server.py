@@ -75,13 +75,13 @@ while True:
                 break
             else:
                 print('Recebida a resposta: {} --- do servidor {}'.format(data2, addressServer[0]))
-                listaDeServidores.append(addressServer[0])
+                listaDeServidores.append(int(addressServer[0].replace(".","")))
     finally:
         sockServer.close()
         print("Lista de servidores",listaDeServidores)
         ipDesteServidor = myAddress()
         print("IP deste servidor", ipDesteServidor)
-        if(min(listaDeServidores)==ipDesteServidor):
+        if(min(listaDeServidores)==int(ipDesteServidor.replace(".",""))):
             print("Este servidor, tem o menor IP, ira responder o Cliente")
             resposta = answerClient(data.decode())
             sock.sendto(str.encode(resposta), addressCLient)#envia a resposta para o cliente
